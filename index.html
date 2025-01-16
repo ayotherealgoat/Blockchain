@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Interface</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .form-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .form-container input {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+        }
+        .form-container button {
+            margin-top: 10px;
+        }
+        pre {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 600px;
+            overflow-x: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Blockchain Interface</h1>
+    <div class="button-container">
+        <button id="getBlockchain">Get Blockchain</button>
+        <button id="postTransaction">Post Transaction</button>
+        <button id="mineBlock">Mine Block</button>
+    </div>
+    <div id="transactionForm" class="form-container">
+        <input type="text" id="amount" placeholder="Amount">
+        <input type="text" id="sender" placeholder="Sender">
+        <input type="text" id="recipient" placeholder="Recipient">
+        <button id="submitTransaction">Submit Transaction</button>
+    </div>
+    <pre id="response"></pre>
+    
+    <script>
+        document.getElementById('getBlockchain').addEventListener('click', function() {
+            fetch('/blockchain')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('response').textContent = 'Error fetching blockchain data';
+                });
+        });
+
+        document.getElementById('postTransaction').addEventListener('click', function() {
+            document.getElementById('transactionForm').style.display = 'flex';
+        });
+
+        document.getElementById('submitTransaction').addEventListener('click', function() {
+            const amount = document.getElementById('amount').value;
+            const sender = document.getElementById('sender').value;
+            const recipient = document.getElementById('recipient').value;
+
+            fetch('/transaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount, sender, recipient })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('transactionForm').style.display = 'none';
+                document.getElementById('amount').value = '';
+                document.getElementById('sender').value = '';
+                document.getElementById('recipient').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response').textContent = 'Error posting transaction';
+            });
+        });
+
+        document.getElementById('mineBlock').addEventListener('click', function() {
+            fetch('/mine')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('response').textContent = 'Error mining block';
+                });
+        });
+    </script>
+</body>
+</html>
